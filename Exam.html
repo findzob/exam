@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vidyanjali School Math Bee 2025-2026</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d); color: #333; min-height: 100vh; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+        
+        /* Main Container */
+        .container { width: 100%; height: 100vh; background-color: rgba(255, 255, 255, 0.95); display: flex; flex-direction: column; overflow: hidden; z-index: 10; position: relative; }
+        
+        /* Header Styling - Updated for side-by-side layout */
+        header { 
+            background: white; 
+            border-bottom: 4px solid #b21f1f;
+            padding: 10px 20px; 
+            flex-shrink: 0; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: row; /* Arrange items horizontally */
+            align-items: center;
+            justify-content: space-between; /* Space out left, center, right */
+        }
+
+        .header-left, .header-right {
+            flex: 0 0 auto; /* Do not stretch */
+            display: flex;
+            align-items: center;
+        }
+
+        .header-center {
+            flex: 1 1 auto; /* Take up remaining space */
+            text-align: center;
+            padding: 0 0px;
+        }
+        
+        .school-logo-img {
+            max-height: 70px; /* Slightly smaller to fit nicely */
+            width: auto;
+            object-fit: contain;
+        }
+
+        /* Updated Poster Style for Header */
+        .bee-poster-img {
+            max-height: 80px; /* Smaller to fit in header */
+            width: auto;
+            border-radius: 8px;
+            border: 2px solid white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+        }
+        .bee-poster-img:hover {
+            transform: scale(1.05);
+        }
+
+        h1 { display: none; } 
+        h2 { 
+            font-size: 20px; 
+            font-weight: bold; 
+            color: #1a2a6c; 
+            margin: 0;
+            background-color: #f0f0f0;
+            padding: 8px 20px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+        
+        .content { flex: 1; padding: 15px; display: flex; flex-direction: column; overflow: hidden; }
+        
+        .round-selector { display: flex; justify-content: center; margin-bottom: 10px; flex-shrink: 0; margin-top: 10px; }
+        .round-btn { padding: 10px 20px; margin: 0 5px; background-color: #e9ecef; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.1); font-size: 14px; }
+        .round-btn.active { background-color: #1a2a6c; color: white; }
+        .round-btn:hover:not(.active) { background-color: #d0d5db; }
+        
+        /* Timer Styles */
+        .timer-badge {
+            align-self: center;
+            background-color: #1a2a6c;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.3s;
+        }
+        .timer-badge.warning {
+            background-color: #dc3545;
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .question-container { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding-bottom: 20px; }
+        .question-number { font-size: 18px; color: #b21f1f; margin-bottom: 10px; font-weight: bold; text-align: center; }
+        .question-text { font-size: 18px; line-height: 1.6; margin-bottom: 20px; background-color: #f9f9f9; padding: 15px; border-radius: 10px; border-left: 5px solid #1a2a6c; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        
+        .options { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 20px; }
+        .option { padding: 12px; background-color: #f0f0f0; border-radius: 8px; cursor: pointer; transition: all 0.3s; border: 2px solid transparent; box-shadow: 0 2px 3px rgba(0,0,0,0.05); font-size: 16px; }
+        .option:hover { background-color: #e0e0e0; transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .option.selected { background-color: #d4edda; border-color: #28a745; }
+        .option.correct { background-color: #d4edda; border-color: #28a745; position: relative; }
+        .option.incorrect { background-color: #f8d7da; border-color: #dc3545; }
+        
+        .navigation { display: flex; justify-content: space-between; margin-top: auto; flex-shrink: 0; padding-top: 10px; border-top: 1px solid #eee; }
+        button { padding: 10px 20px; background-color: #1a2a6c; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; transition: all 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        button:hover { background-color: #0d1a4a; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        button:disabled { background-color: #6c757d; cursor: not-allowed; transform: none; box-shadow: none; }
+        
+        .result { margin-top: 10px; padding: 10px; border-radius: 8px; text-align: center; font-weight: bold; display: none; margin-bottom: 10px; }
+        .result.correct { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .result.incorrect { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .hidden { display: none !important; }
+        
+        .progress { height: 6px; background-color: #e9ecef; border-radius: 3px; margin-bottom: 15px; overflow: hidden; flex-shrink: 0; }
+        .progress-bar { height: 100%; background-color: #1a2a6c; width: 0%; transition: width 0.3s; }
+        
+        .completion-stats { text-align: center; margin-bottom: 20px; font-size: 18px; font-weight: bold; color: #1a2a6c; }
+        .completion-message { text-align: center; padding: 20px; overflow-y: auto; max-height: 100%; }
+        .wrong-answers-container { margin-top: 20px; max-height: 300px; overflow-y: auto; border: 1px solid #ddd; border-radius: 8px; padding: 15px; background-color: #f8f9fa; text-align: left; }
+        .wrong-answer-item { padding: 10px; margin-bottom: 10px; border-radius: 6px; background-color: #fff; border-left: 4px solid #dc3545; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .wrong-answer-question { font-weight: bold; margin-bottom: 5px; color: #333; }
+        .wrong-answer-explanation { font-size: 14px; color: #155724; margin-top: 5px; font-style: italic; }
+        
+        /* --- ANIMATION STYLES --- */
+        .celebration-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            overflow: hidden;
+        }
+
+        .balloon {
+            position: absolute;
+            bottom: -100px;
+            width: 50px;
+            height: 65px;
+            border-radius: 50%;
+            background-color: red;
+            animation: floatUp 4s linear forwards;
+            opacity: 0.9;
+        }
+        
+        .balloon::before {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 40px;
+            background-color: rgba(0,0,0,0.3);
+        }
+
+        .clap-emoji {
+            position: absolute;
+            font-size: 40px;
+            animation: popFade 2s ease-out forwards;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-120vh) rotate(20deg); opacity: 0; }
+        }
+
+        @keyframes popFade {
+            0% { transform: scale(0.5) translateY(0); opacity: 0; }
+            20% { transform: scale(1.2) translateY(-20px); opacity: 1; }
+            100% { transform: scale(1) translateY(-100px); opacity: 0; }
+        }
+
+        @media (max-width: 768px) {
+            /* Stack header items vertically on mobile */
+            header {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .header-center { padding: 0; }
+            h2 { font-size: 16px; padding: 5px 15px; }
+            .school-logo-img, .bee-poster-img { max-height: 60px; }
+
+            .content { padding: 10px; }
+            .question-text { font-size: 16px; padding: 12px; }
+            .navigation button { padding: 8px 15px; font-size: 14px; }
+            .timer-badge { font-size: 16px; padding: 5px 15px; }
+        }
+    </style>
+</head>
+<body>
+    <div id="celebrationContainer" class="celebration-container"></div>
+
+    <div class="container">
+        <header>
+            <div class="header-left">
+                <img src="school-logo.jpg" alt="Vidyanjali School Logo" class="school-logo-img">
+            </div>
+            <div class="header-center">
+                <h1>Vidyanjali School, Kakinada</h1> 
+                <h2>MATH BEE [2025-2026] - GRADE: VI</h2>
+            </div>
+            <div class="header-right">
+                <img src="school-math-bee.jpg" alt="Math Bee 2025-26 Poster" class="bee-poster-img">
+            </div>
+        </header>
+        
+        <div class="content">
+            
+            <div class="round-selector">
+                <button class="round-btn active" data-round="round1">Round 1 (24 Qs)</button>
+                <button class="round-btn" data-round="round2">Round 2 (8 Qs)</button>
+            </div>
+            
+            <div class="progress">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            
+            <div class="question-container" id="questionContainer">
+                <div id="timerBadge" class="timer-badge">
+                    <span>⏱️</span> <span id="timerText">01:00</span>
+                </div>
+
+                <div class="question-number" id="questionNumber">Question 1</div>
+                <div class="question-text" id="questionText"></div>
+                
+                <div class="options" id="optionsContainer"></div>
+                
+                <div class="result" id="result"></div>
+                
+                <div class="navigation">
+                    <button id="prevBtn" disabled>Previous</button>
+                    <button id="nextBtn">Next</button>
+                </div>
+            </div>
+            
+            <div id="completionMessage" class="hidden">
+                <div class="completion-stats" id="completionStats"></div>
+                <div class="completion-message">
+                    <h2>Quiz Completed!</h2>
+                    <p>You have answered all questions in this round.</p>
+                    <div class="wrong-answers-container hidden" id="finalWrongAnswers">
+                        <h3>Review Incorrect Answers:</h3>
+                        <div id="finalWrongAnswersList"></div>
+                    </div>
+                    <button id="restartBtn" style="margin-top: 20px;">Restart Quiz</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- TIMER SYSTEM ---
+        let timerInterval;
+        let timeLeft = 60; // 60 seconds
+        const timerBadge = document.getElementById('timerBadge');
+        const timerText = document.getElementById('timerText');
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timeLeft = 60;
+            updateTimerDisplay();
+            
+            // If already answered, show 00:00 or stop, don't run timer
+            if (userAnswers[currentRound][currentQuestion] !== null) {
+                timerText.textContent = "--:--";
+                return;
+            }
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    handleTimeUp();
+                }
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerText.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (timeLeft <= 10) {
+                timerBadge.classList.add('warning');
+            } else {
+                timerBadge.classList.remove('warning');
+            }
+        }
+
+        function handleTimeUp() {
+            // Treat as wrong answer but with specific Time Up message
+            const question = questionsData[currentRound][currentQuestion];
+            
+            // Disable options
+            const options = document.querySelectorAll('.option');
+            options.forEach(opt => opt.style.pointerEvents = 'none');
+            
+            // Mark correct answer visually
+            const correctOption = document.querySelector(`.option[data-index="${question.correct}"]`);
+            if (correctOption) correctOption.classList.add('correct');
+            
+            // Mark as answered (using -1 to indicate timeout if needed, or just track as wrong)
+            userAnswers[currentRound][currentQuestion] = -1; 
+            
+            // Show Result
+            result.textContent = "Time's Up! The correct answer is " + question.options[question.correct];
+            result.className = 'result incorrect';
+            result.style.display = 'block';
+            
+            // Voice
+            speakText("Time is up!");
+            
+            // Add to wrong answers list
+            wrongAnswers[currentRound].push({
+                question: question.text,
+                userAnswer: "Time Expired",
+                correctAnswer: question.options[question.correct],
+                explanation: question.explanation
+            });
+        }
+
+
+        // --- ANIMATION SYSTEM ---
+        function triggerCelebration() {
+            const container = document.getElementById('celebrationContainer');
+            const colors = ['#ff4d4d', '#4dff4d', '#4d4dff', '#ffff4d', '#ff4dff', '#4dffff'];
+            
+            // Create Balloons
+            for (let i = 0; i < 20; i++) {
+                const balloon = document.createElement('div');
+                balloon.classList.add('balloon');
+                const randomLeft = Math.random() * 100;
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                const randomDuration = 3 + Math.random() * 3;
+                balloon.style.left = randomLeft + '%';
+                balloon.style.backgroundColor = randomColor;
+                balloon.style.animationDuration = randomDuration + 's';
+                container.appendChild(balloon);
+                setTimeout(() => { balloon.remove(); }, randomDuration * 1000);
+            }
+
+            // Create Clapping Hands
+            for (let i = 0; i < 10; i++) {
+                const clap = document.createElement('div');
+                clap.classList.add('clap-emoji');
+                clap.textContent = '👏';
+                const randomLeft = 10 + Math.random() * 80;
+                const randomTop = 20 + Math.random() * 60;
+                clap.style.left = randomLeft + '%';
+                clap.style.top = randomTop + '%';
+                container.appendChild(clap);
+                setTimeout(() => { clap.remove(); }, 2000);
+            }
+        }
+
+        // --- AUDIO SYSTEM (Web Audio API) ---
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const audioCtx = new AudioContext();
+        const bufferSize = audioCtx.sampleRate * 2;
+        const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const output = noiseBuffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) { output[i] = Math.random() * 2 - 1; }
+
+        function ensureAudioContext() {
+            if (audioCtx.state === 'suspended') { audioCtx.resume(); }
+        }
+
+        function playClap(time) {
+            const noise = audioCtx.createBufferSource();
+            noise.buffer = noiseBuffer;
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = "bandpass";
+            filter.frequency.value = 800 + Math.random() * 200;
+            const envelope = audioCtx.createGain();
+            noise.connect(filter);
+            filter.connect(envelope);
+            envelope.connect(audioCtx.destination);
+            envelope.gain.setValueAtTime(0, time);
+            envelope.gain.linearRampToValueAtTime(1, time + 0.001);
+            envelope.gain.exponentialRampToValueAtTime(0.01, time + 0.1);
+            noise.start(time);
+            noise.stop(time + 0.15);
+        }
+
+        function playApplause() {
+            ensureAudioContext();
+            const now = audioCtx.currentTime;
+            const clapCount = 15;
+            for (let i = 0; i < clapCount; i++) {
+                const offset = Math.random() * 0.8; 
+                playClap(now + offset);
+            }
+        }
+
+        // --- VOICE SYSTEM ---
+        const synth = window.speechSynthesis;
+        const appreciationPhrases = [
+            "Correct Answer!", "Excellent work!", "Great job!", "That is correct!",
+            "Fantastic!", "Well done!", "You got it right!"
+        ];
+
+        function speakText(text) {
+            if (synth.speaking) synth.cancel();
+            if (text !== '') {
+                const speakUtterance = new SpeechSynthesisUtterance(text);
+                speakUtterance.rate = 1;
+                speakUtterance.pitch = 1;
+                synth.speak(speakUtterance);
+            }
+        }
+
+        function speakRandomAppreciation() {
+            const randomIndex = Math.floor(Math.random() * appreciationPhrases.length);
+            speakText(appreciationPhrases[randomIndex]);
+        }
+
+        // --- QUIZ DATA ---
+        const questionsData = {
+            round1: [
+                {
+                    text: "A glass tumbler costs 29 rupees 35 paise. What will be the cost of 9 such tumblers in paise?",
+                    options: ["26000", "26415", "26455", "26575"],
+                    correct: 1,
+                    explanation: "29 rupees 35 paise = 2935 paise. 2935 × 9 = 26415 paise."
+                },
+                {
+                    text: "The ratio of the number of sides of a Square and the number of edges of a Cube is _____",
+                    options: ["1:2", "1:3", "1:4", "2:3"],
+                    correct: 1,
+                    explanation: "Square has 4 sides, Cube has 12 edges. Ratio = 4:12 = 1:3."
+                },
+                {
+                    text: "Rajat consumes 1kg 67gms of sugar in a month. How much will he consume in a year?",
+                    options: ["10kg 800gms", "12kg 804gms", "128004gms", "12309gms"],
+                    correct: 1,
+                    explanation: "1kg 67g = 1067g. 1067 × 12 = 12804g = 12kg 804gms."
+                },
+                {
+                    text: "Measures of the two angles between an hour and minute hands of a clock at 9'o clock are _________",
+                    options: ["60°, 300°", "270°, 90°", "75°, 285°", "30°, 300°"],
+                    correct: 1,
+                    explanation: "At 9:00, the angle is 90° (internal) and 270° (reflex)."
+                },
+                {
+                    text: "Identify the smallest two digit prime number",
+                    options: ["10", "11", "13", "17"],
+                    correct: 1,
+                    explanation: "10 is not prime. 11 is the first 2-digit number that is prime."
+                },
+                {
+                    text: "Select the correct option regarding these statements: A) Two lines which meet at a distinct point are called parallel lines. B) A simple curve is one that crosses itself.",
+                    options: ["Only A is true", "Only B is true", "Both A and B are true", "Neither A nor B is true"],
+                    correct: 3,
+                    explanation: "Lines that meet are intersecting (not parallel). A simple curve does NOT cross itself. So neither is true."
+                },
+                {
+                    text: "The co-prime numbers from the following pairs are ____",
+                    options: ["7 and 63", "36 and 25", "35 and 21", "63 and 81"],
+                    correct: 1,
+                    explanation: "36 and 25 share no common factors (Factors of 25: 1,5,25; Factors of 36: 1,2,3,4,6,9,12,18,36)."
+                },
+                {
+                    text: "What should be subtracted from the Sum of 56.37 and 39.89 to get 47.94?",
+                    options: ["53.46", "58.46", "48.32", "43.62"],
+                    correct: 2,
+                    explanation: "Sum = 56.37 + 39.89 = 96.26. Subtract: 96.26 - 47.94 = 48.32."
+                },
+                {
+                    text: "Which of the following numbers is not divisible by 8?",
+                    options: ["34672", "84132", "13456", "14568"],
+                    correct: 1,
+                    explanation: "84132 ÷ 8 = 10516.5. It leaves a remainder of 4."
+                },
+                {
+                    text: "In a ratio b:a, a is called _____________",
+                    options: ["antecedent", "proportion", "constant", "consequent"],
+                    correct: 3,
+                    explanation: "In a ratio, the first term is antecedent, the second term is consequent."
+                },
+                {
+                    text: "In the word COMPARISON, the ratio of number of consonants to the number of Vowels is_____",
+                    options: ["4:7", "7:4", "6:4", "4:6"],
+                    correct: 2,
+                    explanation: "Consonants (C,M,P,R,S,N) = 6. Vowels (O,A,I,O) = 4. Ratio is 6:4."
+                },
+                {
+                    text: "In a ratio 3:4, if the antecedent is 12, then the consequent is_______",
+                    options: ["16", "9", "20", "24"],
+                    correct: 0,
+                    explanation: "3:4 = 12:x. Since 3×4=12, then 4×4=16."
+                },
+                {
+                    text: "If Side of a square is doubled, then the new perimeter is ______ times the original perimeter.",
+                    options: ["2", "one-fourth", "9", "4"],
+                    correct: 0,
+                    explanation: "P = 4s. If side becomes 2s, New P = 4(2s) = 8s. 8s is 2 times 4s."
+                },
+                {
+                    text: "The product of three consecutive numbers is always divisible by",
+                    options: ["4", "6", "12", "24"],
+                    correct: 1,
+                    explanation: "Example: 1×2×3=6; 2×3×4=24. The product is always divisible by 6."
+                },
+                {
+                    text: "On a number line 10.6 lies between ____ and ____",
+                    options: ["-10 and -11", "12 and 11", "10 and 11", "9 and 10"],
+                    correct: 2,
+                    explanation: "10.6 is greater than 10 but less than 11."
+                },
+                {
+                    text: "Which of the following is correct?",
+                    options: ["-99 < 0 < 2 < -37", "-99 < -37 < 0 < 2", "-37 < 0 < 2 < -99", "-37 < -99 < 0 < 2"],
+                    correct: 1,
+                    explanation: "Negative numbers with larger absolute values are smaller. -99 is the smallest, then -37, then 0, then 2."
+                },
+                {
+                    text: "The HCF of two numbers is 28 and their LCM is 336. If one number is 112, then the other number is__",
+                    options: ["64", "84", "34", "92"],
+                    correct: 1,
+                    explanation: "Product of numbers = HCF × LCM. 112 × B = 28 × 336. B = (28 × 336)/112 = 84."
+                },
+                {
+                    text: "How many right angles are there in 270°?",
+                    options: ["4", "2", "1", "3"],
+                    correct: 3,
+                    explanation: "One right angle is 90°. 270 ÷ 90 = 3."
+                },
+                {
+                    text: "‘X’ is a two digit even number that is divisible by 9. It is a multiple of 5. What is X?",
+                    options: ["40", "60", "80", "90"],
+                    correct: 3,
+                    explanation: "Multiple of 5 and Even means it ends in 0. Of the options, only 90 is divisible by 9."
+                },
+                {
+                    text: "How many hours are there from 17:30 hrs on 30th March 2025 to 4:30 hrs on 2nd April 2025?",
+                    options: ["11", "71", "49", "59"],
+                    correct: 3,
+                    explanation: "Mar 30 17:30 to Apr 1 17:30 is 48 hrs. Apr 1 17:30 to Apr 2 04:30 is 11 hrs. Total = 59 hrs."
+                },
+                {
+                    text: "How many seconds is 4/5 of an hour less than 56 mins?",
+                    options: ["80", "240", "480", "720"],
+                    correct: 2,
+                    explanation: "4/5 hour = 48 mins. 56 - 48 = 8 mins. 8 × 60 = 480 seconds."
+                },
+                {
+                    text: "Express 0.35 + 13 hundredth as a fraction in its simplest form",
+                    options: ["48/100", "267/20", "12/25", "13/100"],
+                    correct: 2,
+                    explanation: "0.35 + 0.13 = 0.48. 48/100 simplified (divide by 4) is 12/25."
+                },
+                {
+                    text: "8 hours ago the time was 20:55 hrs on Monday. When will it be 17/3 hrs late from now?",
+                    options: ["10:35 hrs, Monday", "10:35 hrs Tuesday", "6:35 hrs Tuesday", "9:35 hrs, Tuesday"],
+                    correct: 1,
+                    explanation: "8 hrs ago was 20:55 Mon, so NOW is 04:55 Tue. 17/3 hrs = 5hr 40min. 04:55 + 5:40 = 10:35 Tuesday."
+                },
+                {
+                    text: "If Moon is called Wednesday, Venus is called Sunday, Sun is called Thursday, Jupiter is called Monday and Mars is called Saturday then the Earth revolves around_________",
+                    options: ["Sunday", "Tuesday", "Wednesday", "Thursday"],
+                    correct: 3,
+                    explanation: "Earth revolves around the Sun. The code says 'Sun is called Thursday'."
+                }
+            ],
+            round2: [
+                {
+                    text: "Number of prime factors of 1728 is ___",
+                    options: ["3", "5", "2", "7"],
+                    correct: 2,
+                    explanation: "1728 = 2^6 × 3^3. The unique prime factors are 2 and 3. So there are 2 prime factors."
+                },
+                {
+                    text: "A man is standing facing North. In which direction will he face, if he makes 720° turn clockwise?",
+                    options: ["west", "south", "east", "north"],
+                    correct: 3,
+                    explanation: "720° is exactly 2 full circles (360° × 2). He will end up facing the same direction (North)."
+                },
+                {
+                    text: "Rohan saved 2860 Rupees. What is the Roman number for this amount?",
+                    options: ["MMDCCLX", "MDCCCLX", "MMDCCCLX", "MMDCCCLIX"],
+                    correct: 2,
+                    explanation: "2000=MM, 800=DCCC, 60=LX. So MMDCCCLX."
+                },
+                {
+                    text: "P is the father of Q. R and S are sons of Q. T is the mother of S. How is T related to P?",
+                    options: ["Wife", "daughter", "daughter in law", "mother"],
+                    correct: 2,
+                    explanation: "Since Q is the father of S, and T is the mother of S, T and Q are married. Since P is Q's father, T is P's daughter-in-law."
+                },
+                {
+                    text: "If BEAR is coded as EHDU, then TIGER is coded as _____",
+                    options: ["VMKIV", "WLJHU", "UKIGT", "UJHFS"],
+                    correct: 1,
+                    explanation: "The pattern is +3 letters. T(+3)=W, I(+3)=L, G(+3)=J, E(+3)=H, R(+3)=U."
+                },
+                {
+                    text: "Number of perpendicular bisectors on a line segment is____",
+                    options: ["Three", "Five", "One", "Infinite"],
+                    correct: 2,
+                    explanation: "A line segment has exactly one perpendicular bisector."
+                },
+                {
+                    text: "Which equation justifies: 'The age of Riya (Q) is five more than three times the age of her son (P)'?",
+                    options: ["P=2Q+3", "Q=3P+3", "Q=3P+5", "P=5Q+3"],
+                    correct: 2,
+                    explanation: "Riya (Q) = 3 × Son (P) + 5. So Q = 3P + 5."
+                },
+                {
+                    text: "In certain code, FREEDOM is written as KWJJITR. How will STRANGER be written?",
+                    options: ["XYWFSLJW", "WXVERKIV", "VWUDQJHU", "UVTCPIGT"],
+                    correct: 0,
+                    explanation: "The pattern is +5 letters (F→K, R→W). STRANGER + 5 becomes S→X, T→Y, R→W, A→F, N→S, G→L, E→J, R→W."
+                }
+            ]
+        };
+
+        // Initialize variables
+        let currentRound = 'round1';
+        let currentQuestion = 0;
+        let userAnswers = {
+            round1: Array(questionsData.round1.length).fill(null),
+            round2: Array(questionsData.round2.length).fill(null)
+        };
+        let wrongAnswers = {
+            round1: [],
+            round2: []
+        };
+        
+        // DOM elements
+        const roundBtns = document.querySelectorAll('.round-btn');
+        const questionNumber = document.getElementById('questionNumber');
+        const questionText = document.getElementById('questionText');
+        const optionsContainer = document.getElementById('optionsContainer');
+        const result = document.getElementById('result');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const questionContainer = document.getElementById('questionContainer');
+        const completionMessage = document.getElementById('completionMessage');
+        const restartBtn = document.getElementById('restartBtn');
+        const progressBar = document.getElementById('progressBar');
+        const finalWrongAnswers = document.getElementById('finalWrongAnswers');
+        const finalWrongAnswersList = document.getElementById('finalWrongAnswersList');
+        const completionStats = document.getElementById('completionStats');
+        
+        // Select round
+        function selectRound(e) {
+            if (synth.speaking) synth.cancel();
+            ensureAudioContext();
+            roundBtns.forEach(btn => btn.classList.remove('active'));
+            e.target.classList.add('active');
+            currentRound = e.target.dataset.round;
+            restartQuiz();
+        }
+        
+        // Load question
+        function loadQuestion() {
+            const question = questionsData[currentRound][currentQuestion];
+            questionNumber.textContent = `Question ${currentQuestion + 1} of ${questionsData[currentRound].length}`;
+            questionText.textContent = question.text;
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                if (userAnswers[currentRound][currentQuestion] === index) {
+                    optionElement.classList.add('selected');
+                }
+                
+                if (userAnswers[currentRound][currentQuestion] !== null) {
+                    optionElement.style.pointerEvents = 'none';
+                    if (index === question.correct) {
+                        optionElement.classList.add('correct');
+                    } else if (userAnswers[currentRound][currentQuestion] === index) {
+                        optionElement.classList.add('incorrect');
+                    }
+                }
+                
+                optionElement.textContent = `${String.fromCharCode(65 + index)}. ${option}`;
+                optionElement.dataset.index = index;
+                optionElement.addEventListener('click', selectOption);
+                optionsContainer.appendChild(optionElement);
+            });
+            
+            if (userAnswers[currentRound][currentQuestion] !== null) {
+                const isCorrect = userAnswers[currentRound][currentQuestion] === question.correct;
+                result.textContent = isCorrect 
+                    ? 'Correct! ' + question.explanation
+                    : (userAnswers[currentRound][currentQuestion] === -1 ? 'Time\'s Up! ' : 'Incorrect. ') + question.explanation;
+                
+                result.className = `result ${isCorrect ? 'correct' : 'incorrect'}`;
+                result.style.display = 'block';
+            } else {
+                result.style.display = 'none';
+            }
+            
+            prevBtn.disabled = currentQuestion === 0;
+            updateProgressBar();
+            
+            // Start Timer if not answered
+            startTimer();
+        }
+        
+        // Select option
+        function selectOption(e) {
+            if (userAnswers[currentRound][currentQuestion] !== null) return;
+            const options = document.querySelectorAll('.option');
+            options.forEach(option => option.classList.remove('selected'));
+            e.target.classList.add('selected');
+            submitAnswer();
+        }
+        
+        // Submit answer
+        function submitAnswer() {
+            stopTimer(); // Stop timer on submit
+            const selectedOption = document.querySelector('.option.selected');
+            if (!selectedOption) return;
+            
+            const answerIndex = parseInt(selectedOption.dataset.index);
+            userAnswers[currentRound][currentQuestion] = answerIndex;
+            
+            const question = questionsData[currentRound][currentQuestion];
+            const isCorrect = answerIndex === question.correct;
+            
+            if (isCorrect) {
+                playApplause();
+                triggerCelebration(); 
+                speakRandomAppreciation();
+            } else {
+                speakText("Wrong Answer");
+                wrongAnswers[currentRound].push({
+                    question: question.text,
+                    userAnswer: question.options[answerIndex],
+                    correctAnswer: question.options[question.correct],
+                    explanation: question.explanation
+                });
+            }
+            
+            loadQuestion();
+        }
+        
+        // Update progress bar
+        function updateProgressBar() {
+            const progress = ((currentQuestion + 1) / questionsData[currentRound].length) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+        
+        // Next question
+        function nextQuestion() {
+            stopTimer();
+            if (synth.speaking) synth.cancel();
+            if (currentQuestion < questionsData[currentRound].length - 1) {
+                currentQuestion++;
+                loadQuestion();
+            } else {
+                showCompletionMessage();
+            }
+        }
+        
+        // Previous question
+        function prevQuestion() {
+            stopTimer();
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                loadQuestion();
+            }
+        }
+        
+        // Show completion
+        function showCompletionMessage() {
+            stopTimer();
+            questionContainer.classList.add('hidden');
+            completionMessage.classList.remove('hidden');
+            const total = questionsData[currentRound].length;
+            const correct = userAnswers[currentRound].filter((ans, i) => ans === questionsData[currentRound][i].correct).length;
+            completionStats.textContent = `You scored ${correct} / ${total}`;
+            finalWrongAnswersList.innerHTML = '';
+            if (wrongAnswers[currentRound].length > 0) {
+                finalWrongAnswers.classList.remove('hidden');
+                wrongAnswers[currentRound].forEach((item, idx) => {
+                    const div = document.createElement('div');
+                    div.className = 'wrong-answer-item';
+                    div.innerHTML = `
+                        <div class="wrong-answer-question">${idx + 1}. ${item.question}</div>
+                        <div>Your Answer: <span style="color:red">${item.userAnswer}</span></div>
+                        <div>Correct Answer: <span style="color:green">${item.correctAnswer}</span></div>
+                        <div class="wrong-answer-explanation">${item.explanation}</div>
+                    `;
+                    finalWrongAnswersList.appendChild(div);
+                });
+            } else {
+                finalWrongAnswers.classList.add('hidden');
+                completionMessage.innerHTML += "<h3>Perfect Score! Excellent Work!</h3>";
+                playApplause();
+                triggerCelebration();
+                speakText("Excellent work! You got a perfect score.");
+            }
+        }
+        
+        // Restart
+        function restartQuiz() {
+            if (synth.speaking) synth.cancel();
+            stopTimer();
+            currentQuestion = 0;
+            userAnswers[currentRound] = Array(questionsData[currentRound].length).fill(null);
+            wrongAnswers[currentRound] = [];
+            questionContainer.classList.remove('hidden');
+            completionMessage.classList.add('hidden');
+            loadQuestion();
+        }
+        
+        // Listeners
+        roundBtns.forEach(btn => btn.addEventListener('click', selectRound));
+        nextBtn.addEventListener('click', nextQuestion);
+        prevBtn.addEventListener('click', prevQuestion);
+        restartBtn.addEventListener('click', restartQuiz);
+        
+        // Init
+        loadQuestion();
+    </script>
+</body>
+</html>
